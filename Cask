@@ -1,7 +1,10 @@
 (source gnu)
 (source melpa)
 
-(package-file "TODO")
+(package-file "orgext.el")
+
+(depends-on "dash")
+(depends-on "dash-functional")
 
 (development
  (depends-on "f")
