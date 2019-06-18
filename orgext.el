@@ -14,10 +14,8 @@
 ;; Do whatever you want. No warranties.
 
 ;;; code
-
-;; Prepare error codes
 (defun orgext-mark-block ()
-  "Marks the context of the block at point"
+  "Marks the context of the org block at point."
   (interactive)
   (-if-let (el (org-element-context))
       (when (-any? (-partial #'equal (car el))
@@ -45,6 +43,7 @@
           (set-mark end)))))
 
 (defun orgext-copy-block-from-above ()
+  "Copies the first org block from above to after the current point."
   (interactive)
   (-let [point-at-entry (point)]
     (save-excursion
