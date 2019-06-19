@@ -14,33 +14,38 @@
 ;; Do whatever you want. No warranties.
 
 ;;; code
+(defun orgext--user-error-no-block-at-point ()
+  (user-error "No block found at point!"))
+
 (defun orgext-mark-block ()
   "Marks the context of the org block at point."
   (interactive)
   (-if-let (el (org-element-context))
-      (when (-any? (-partial #'equal (car el))
-                   '(example-block src-block verse-block quote-block comment-block))
-        (-let* ((block-begin (plist-get (car (cdr el)) :begin))
-                (block-end (plist-get (car (cdr el)) :end))
-                (post-blank (plist-get (car (cdr el)) :post-blank))
-                ;; we want 1 line after begin and 2 before end
-                (begin (save-excursion
-                         (goto-char block-begin)
-                         (next-line)
-                         (beginning-of-line)
-                         (point)))
-                (end (save-excursion
-                       (goto-char block-end)
-                       (previous-line
-                        (+ 1 post-blank (s-count-matches "\n" (thing-at-point 'line t))))
-                       (when (string-match "^\\#\\+end_" (thing-at-point 'line t))
-                         (previous-line))
-                       (if (< (point) begin)
-                           (goto-char begin))
-                       (end-of-line)
-                       (+ 1 (point)))))
-          (goto-char begin)
-          (set-mark end)))))
+      (if (-any? (-partial #'equal (car el))
+                 '(example-block src-block verse-block quote-block comment-block))
+          (-let* ((block-begin (plist-get (car (cdr el)) :begin))
+                  (block-end (plist-get (car (cdr el)) :end))
+                  (post-blank (plist-get (car (cdr el)) :post-blank))
+                  ;; we want 1 line after begin and 2 before end
+                  (begin (save-excursion
+                           (goto-char block-begin)
+                           (next-line)
+                           (beginning-of-line)
+                           (point)))
+                  (end (save-excursion
+                         (goto-char block-end)
+                         (previous-line
+                          (+ 1 post-blank (s-count-matches "\n" (thing-at-point 'line t))))
+                         (when (string-match "^\\#\\+end_" (thing-at-point 'line t))
+                           (previous-line))
+                         (if (< (point) begin)
+                             (goto-char begin))
+                         (end-of-line)
+                         (+ 1 (point)))))
+            (goto-char begin)
+            (set-mark end))
+        (orgext--user-error-no-block-at-point))
+    (orgext--user-error-no-block-at-point)))
 
 (defun orgext-copy-block-from-above ()
   "Copies the first org block from above to after the current point."
