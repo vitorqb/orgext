@@ -51,7 +51,7 @@
   "Copies the first org block from above to after the current point."
   (interactive)
   (-let [point-at-entry (point)]
-    (save-excursion
+    (save-mark-and-excursion
       (org-previous-block 1)
       (orgext-mark-block)
       ;; We need to expand 1 line in each direction to capture the whole block
@@ -63,6 +63,15 @@
       (copy-region-as-kill nil nil t))
     (yank)
     (goto-char point-at-entry)))
+
+(defun orgext-copy-block-contents-to-compile-command ()
+  "Copies the contents of the code block at point to compile-command"
+  (interactive)
+  (save-mark-and-excursion
+    (orgext-mark-block)
+    (-let* ((((beg . end)) (region-bounds))
+            (block-contents (buffer-substring-no-properties beg (- end 1))))
+      (setq compile-command block-contents))))
 
 (provide 'orgext)
 ;;; orgext.el ends here
