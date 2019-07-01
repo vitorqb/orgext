@@ -73,5 +73,27 @@
             (block-contents (buffer-substring-no-properties beg (- end 1))))
       (setq compile-command block-contents))))
 
+(defun orgext-new-block-from-other-window (block-type)
+  "Calls `org-insert-structure-template`. Then pastes the text from
+`other-window` inside the block."
+  ;; Copied from org-insert-structure-template
+  (interactive
+   (list (pcase (org--insert-structure-template-mks)
+	   (`("\t" . ,_) (read-string "Structure type: "))
+	   (`(,_ ,choice . ,_) choice))))
+  (save-mark-and-excursion
+    (org-insert-structure-template block-type)
+    (beginning-of-line)
+    (-let [other-window-contents (orgext--get-other-window-contents)]
+      (insert other-window-contents))))
+
+(defun orgext--get-other-window-contents ()
+  "Calls `other-window`, copies the entire buffer string, calls
+other-window and returns."
+  (call-interactively #'other-window)
+  (-let [buffer-contents (buffer-substring-no-properties (point-min) (point-max))]
+    (call-interactively #'other-window)
+    buffer-contents))
+
 (provide 'orgext)
 ;;; orgext.el ends here
