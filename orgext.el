@@ -95,5 +95,13 @@ other-window and returns."
     (call-interactively #'other-window)
     buffer-contents))
 
+(defun orgext-tfs-work-item-open (ticket)
+  "Visits the tfs ticket on a browser. `ticket` may contain a # at the beggining."
+  (->> ticket (s-replace "#" "") (s-concat my/tfs-work-item-url-prefix) browse-url))
+
+(defun orgext-tfs-pr-open (pr)
+  "Visits the tfs PR on a browser. `pr` may contain a ! at the beggining."
+  (->> pr (s-replace "!" "") (s-concat my/tfs-pr-url-prefix) browse-url))
+
 (provide 'orgext)
 ;;; orgext.el ends here
