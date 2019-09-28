@@ -57,6 +57,7 @@
 ;; This is failing because of the org version :`(
 (ert-deftest test-orgext-new-block-from-other-window ()
 
+  ;; Selecting example block
   (-let* (;; A text for the `other-window`
           (other-contents "Foo bar ipson loren")
           ;; The block type
@@ -73,6 +74,24 @@
         (orgext-new-block-from-other-window "example")
         (should (equal (point) (point-min)))
         (should (string= (buffer-substring-no-properties (point-min) (point-max))
-                         expected-contents))))))
+                         expected-contents))))
+
+    ;; Selecting src block
+    (-let* (;; A text for the `other-window`
+            (other-contents "Foo!")
+            ;; The block type
+            (block-type "src")
+            ;; What we expect to find in the end
+            (expected-contents (concat  "#+begin_src \n" other-contents "#+end_src\n")))
+
+      (cl-letf (;; Mocks the function to get the other window text
+                ((symbol-function 'orgext--get-other-window-contents)
+                 (-const other-contents)))
+
+        (with-temp-buffer
+          (orgext-new-block-from-other-window block-type)
+          (should (equal (point) (point-min)))
+          (should (string= (buffer-substring-no-properties (point-min) (point-max))
+                           expected-contents)))))))
 
 ;;; orgext-test.el ends here

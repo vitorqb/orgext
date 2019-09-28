@@ -83,6 +83,7 @@
 	   (`(,_ ,choice . ,_) choice))))
   (save-mark-and-excursion
     (org-insert-structure-template block-type)
+    (search-forward "#+end")
     (beginning-of-line)
     (-let [other-window-contents (orgext--get-other-window-contents)]
       (insert other-window-contents))))
