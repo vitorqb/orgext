@@ -104,5 +104,27 @@ other-window and returns."
   "Visits the tfs PR on a browser. `pr` may contain a ! at the beggining."
   (->> pr (s-replace "!" "") (s-concat my/tfs-pr-url-prefix) browse-url))
 
+(defun orgext-jira-open (ticket)
+  "Visits the jira ticket on a browser."
+  (assert my/jira-base-url)
+  (-> my/jira-base-url file-name-as-directory (concat ticket) browse-url))
+
+(defun orgext-bitbucket-server-pr-open (pr)
+    "Visits a PR from bitbucket-server in a browser. `pr` must be a
+string that contains the repo name and the pr number, separated by
+/. Like this: foo-repo/69"
+    (assert my/bitbucket-server-base-url)
+    (--> pr
+         (s-split "/" it)
+         (or (and (equal (length it) 2) it)
+             (error "A single '/' is expected in a pr link"))
+         (apply
+          #'format
+          "%s%s/pull-requests/%s"
+          (file-name-as-directory my/bitbucket-server-base-url)
+          it)
+         (and (print it) it)
+         (browse-url it)))
+
 (provide 'orgext)
 ;;; orgext.el ends here
