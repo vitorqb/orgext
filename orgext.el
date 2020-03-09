@@ -129,6 +129,7 @@ string that contains the repo name and the pr number, separated by
 (defun orgext-capture-with-task ()
   "Tricky way to call `org-capture` without prompting for a template (using the default one)"
   (interactive)
+  (require 'org-capture)
   (let ((org-capture-entry (org-capture-select-template "t")))
     (call-interactively 'org-capture)))
 
