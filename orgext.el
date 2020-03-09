@@ -126,5 +126,11 @@ string that contains the repo name and the pr number, separated by
          (and (print it) it)
          (browse-url it)))
 
+(defun orgext-capture-with-task ()
+  "Tricky way to call `org-capture` without prompting for a template (using the default one)"
+  (interactive)
+  (let ((org-capture-entry (org-capture-select-template "t")))
+    (call-interactively 'org-capture)))
+
 (provide 'orgext)
 ;;; orgext.el ends here
