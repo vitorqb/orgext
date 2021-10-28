@@ -14,6 +14,8 @@
 ;; Do whatever you want. No warranties.
 
 ;;; code
+(defvar orgext-element-at-point-buffer-name "*OrgExtElementAtPoint*")
+
 (defun orgext--user-error-no-block-at-point ()
   (user-error "No block found at point!"))
 
@@ -132,6 +134,21 @@ string that contains the repo name and the pr number, separated by
   (require 'org-capture)
   (let ((org-capture-entry (org-capture-select-template "t")))
     (call-interactively 'org-capture)))
+
+(defun orgext-element-at-point-on-new-buffer ()
+  "Display the current element in point in a read-only new buffer"
+  (interactive)
+  (-let* (((_ (&plist :begin begin :end end)) (org-element-at-point))
+          (element-content                    (buffer-substring begin end)))
+    (with-current-buffer (generate-new-buffer orgext-element-at-point-buffer-name)
+      (insert element-content)
+      (toggle-read-only)
+      (goto-char 0)
+      (org-mode)
+      (use-local-map (copy-keymap org-mode-map))
+      (set-buffer-modified-p nil)
+      (local-set-key "q" #'quit-window)
+      (switch-to-buffer-other-window (current-buffer)))))
 
 (provide 'orgext)
 ;;; orgext.el ends here
