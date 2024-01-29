@@ -142,7 +142,7 @@ string that contains the repo name and the pr number, separated by
           (element-content                    (buffer-substring begin end)))
     (with-current-buffer (generate-new-buffer orgext-element-at-point-buffer-name)
       (insert element-content)
-      (toggle-read-only)
+      (read-only-mode)
       (goto-char 0)
       (org-mode)
       (use-local-map (copy-keymap org-mode-map))
